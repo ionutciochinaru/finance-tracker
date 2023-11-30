@@ -3,14 +3,14 @@
     <div class="flex items-center justify-between">
       <div class="flex items-center space-x-1">
         <UIcon name="i-heroicons-arrow-up-right" class="text-green-400"/>
-        <div>Salary</div>
+        <div>{{ transaction.description }}</div>
       </div>
-      <div>
-        <UBadge>Category</UBadge>
+      <div v-if="transaction.category">
+        <UBadge>{{ transaction.category }}</UBadge>
       </div>
     </div>
     <div class="flex items-center justify-end space-x-2">
-      <div>currency</div>
+      <div>{{ currency }}</div>
       <div>
         <UDropdown :items="items" :popper="{placement: 'bottom-start'}">
           <UButton variant="ghost" trailing-icon="i-heroicons-ellipsis-horizontal"/>
@@ -21,9 +21,15 @@
 </template>
 
 <script setup>
-import {useCurrency} from "~/composables/useCurrency.js";
+const props =defineProps({
+  transaction: {
+    amount: Number,
+    description: String,
+    category: String
+  }
+})
+const {currency} = useCurrency(props.transaction.amount)
 
-const {currency} = useCurrency(5000)
 const items = [
   [
     {

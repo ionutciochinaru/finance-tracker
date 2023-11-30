@@ -4,7 +4,7 @@
       Summary
     </h1>
     <div>
-      <USelectMenu :options="transactionViewOptions" v-model="selectedView" />
+      <USelectMenu :options="transactionViewOptions" v-model="selectedView"/>
     </div>
   </section>
   <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 sm:gap-16 mb-10">
@@ -14,22 +14,28 @@
     <Trend color="red" title="Savings" :amount="4000" :last-amount="36000" :loading="false"/>
   </section>
   <section>
-    <transaction />
-    <transaction />
-    <transaction />
+    <transaction v-for="transaction in transactions" :key="transaction.id" :transaction="transaction"/>
   </section>
 </template>
 
 <script setup>
-  import {transactionViewOptions} from "~/constants.js";
-  import Transaction from "~/components/transaction.vue";
+import {transactionViewOptions} from "~/constants.js";
+import Transaction from "~/components/transaction.vue";
 
-  const selectedView = ref(transactionViewOptions[1])
-  const supabase = useSupabaseClient()
-
+const selectedView = ref(transactionViewOptions[1])
+const transactions = ref([])
+const supabase = useSupabaseClient()
+const {data, pending} = await useAsyncData('transactions', async () => {
   const {data, error} = await supabase
-    .from('transactions')
-    .select()
+      .from('transactions')
+      .select()
 
-  console.log(data, error, "hello?")
+  if (error) return []
+
+  return data
+
+})
+
+transactions.value = data.value
+
 </script>
