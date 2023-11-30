@@ -25,4 +25,11 @@
   import Transaction from "~/components/transaction.vue";
 
   const selectedView = ref(transactionViewOptions[1])
+  const supabase = useSupabaseClient()
+
+  const {data, error} = await supabase
+    .from('transactions')
+    .select()
+
+  console.log(data, error, "hello?")
 </script>

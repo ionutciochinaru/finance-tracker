@@ -1,5 +1,10 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  modules: ['@nuxthq/ui']
+  modules: [
+    '@nuxtjs/supabase',
+    '@nuxthq/ui'
+  ],
+  supabase: {
+    redirect: false
+  }
 })
