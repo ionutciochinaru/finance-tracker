@@ -2,7 +2,7 @@
   <div class="grid grid-cols-2 py-2">
     <div class="flex items-center justify-between">
       <div class="flex items-center space-x-1">
-        <UIcon name="i-heroicons-arrow-up-right" class="text-green-400"/>
+        <UIcon :name="icon" :class="[iconColor]"/>
         <div>{{ transaction.description }}</div>
       </div>
       <div v-if="transaction.category">
@@ -13,7 +13,7 @@
       <div>{{ currency }}</div>
       <div>
         <UDropdown :items="items" :popper="{placement: 'bottom-start'}">
-          <UButton variant="ghost" trailing-icon="i-heroicons-ellipsis-horizontal"/>
+          <UButton variant="ghost" trailing-icon="i-heroicons-ellipsis-horizontal" :loading="isLoading"/>
         </UDropdown>
       </div>
     </div>
@@ -21,14 +21,55 @@
 </template>
 
 <script setup>
-const props =defineProps({
-  transaction: {
-    amount: Number,
-    description: String,
-    category: String
-  }
+
+import {ETransactionType} from "~/types/category.js";
+
+const props = defineProps({
+  transaction: Object
 })
+
+const emit = defineEmits(['deleted'])
 const {currency} = useCurrency(props.transaction.amount)
+
+const isLoading = ref(false)
+const toast = useToast()
+const supabase = useSupabaseClient()
+
+const isIncome = computed(() =>
+    props.transaction.type === ETransactionType.Income
+);
+
+const icon = computed(() =>
+    isIncome.value ? 'i-heroicons-arrow-up-right' : 'i-heroicons-arrow-down-left'
+);
+
+const iconColor = computed(() =>
+    isIncome.value ? 'text-green-400' : 'text-red-400'
+);
+
+const deleteTransaction = async () => {
+  isLoading.value = true
+  try {
+    await supabase
+        .from('transactions')
+        .delete()
+        .eq('id', props.transaction.id)
+    toast.add({
+      title: 'Transaction deleted',
+      icon: 'i-heroicons-check-circle',
+      color: 'green'
+    })
+    emit('deleted', props.transaction.id)
+  } catch (error) {
+    toast.add({
+      title: 'Transaction deleted',
+      icon: 'i-heroicons-exclamation-circle',
+      color: 'red'
+    })
+  } finally {
+    isLoading.value = false
+  }
+}
 
 const items = [
   [
@@ -40,7 +81,7 @@ const items = [
     {
       label: 'Delete',
       icon: 'i-heroicons-trash-20-solid',
-      click: () => console.log('Delete')
+      click: () => deleteTransaction()
     }
   ]
 
