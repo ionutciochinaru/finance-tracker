@@ -1,9 +1,10 @@
 export const ETransactionType = {
     Expense: "Expense",
     Income: "Income",
-    Transfer: "Transfer",
+    Investment: "Investment",
+    Savings: "Savings",
     Loan: "Loan",
     CreditCard: "Credit",
     DebitCard: "Debit",
-    Savings: "Savings",
 };
+

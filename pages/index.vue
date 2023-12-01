@@ -21,7 +21,8 @@
       </div>
     </div>
     <div>
-      <UButton icon="i-heroicons-plus-circle" color="white" variant="solid" label="Add" />
+      <TransactionModal v-model="isOpen"/>
+      <UButton @click="isOpen = true" icon="i-heroicons-plus-circle" color="white" variant="solid" label="Add" />
     </div>
   </section>
   <section v-if="!isLoading">
@@ -43,6 +44,7 @@ const selectedView = ref(transactionViewOptions[1])
 const transactions = ref([])
 const supabase = useSupabaseClient()
 const isLoading = ref(false)
+const isOpen = ref(false)
 const income = computed(
     () => transactions.value.filter(t => t.type === ETransactionType.Income)
 )
